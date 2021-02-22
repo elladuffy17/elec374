@@ -1,0 +1,67 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY Bus_Mux IS
+	PORT(
+		BusMuxIn_R0					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R1					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R2					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R3					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R4					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R5					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R6					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R7					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R8					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R9					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R10				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R11				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R12				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R13				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R14				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_R15				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_HI					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_LO					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_ZHI				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_ZLOW				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_PC					: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_MDR				: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		BusMuxIn_In_Port			: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		C_sign_extended 			: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		
+		sel							: IN STD_LOGIC_VECTOR (4 downto 0); -- represents the 5 bit output from encoder
+		
+		BusMuxOut		 			: OUT STD_LOGIC_VECTOR (31 DOWNTO 0));
+END ENTITY Bus_Mux; -- entity??
+
+
+ARCHITECTURE behavioural OF Bus_Mux IS
+-- this is where constants/signal declaration is done... kinda like local var declaration
+BEGIN
+WITH sel SELECT 
+	BusMuxOut <= BusMuxIn_R0 WHEN "00000",
+			BusMuxIn_R1 WHEN "00001",
+			BusMuxIn_R2 WHEN "00010",
+			BusMuxIn_R3 WHEN "000011",
+			BusMuxIn_R4 WHEN "000100",
+			BusMuxIn_R5 WHEN "000101",
+			BusMuxIn_R6 WHEN "000110",
+			BusMuxIn_R7 WHEN "00111",
+			BusMuxIn_R8 WHEN "01000",
+			BusMuxIn_R9 WHEN "01001",
+			BusMuxIn_R10 WHEN "01010",
+			BusMuxIn_R11 WHEN "01011",
+			BusMuxIn_R12 WHEN "01100",
+			BusMuxIn_R13 WHEN "01101",
+			BusMuxIn_R14 WHEN "01110",
+			BusMuxIn_R15 WHEN "01111",
+			
+			BusMuxIn_HI	WHEN "10000",
+			BusMuxIn_LO	WHEN "10001",
+			BusMuxIn_ZHI WHEN "10010",
+			BusMuxIn_ZLOW WHEN "10100",
+			BusMuxIn_PC WHEN "10100",
+			BusMuxIn_MDR WHEN "10101",
+			BusMuxIn_In_Port WHEN "10110",
+			C_sign_extended WHEN "10111",
+			"11111111111000000000" WHEN OTHERS;	-- for debugging purpose/cover all cases
+END ARCHITECTURE behavioural;

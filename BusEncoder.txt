@@ -1,0 +1,64 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY BusEncoder IS
+	PORT(
+		R0Out							: IN STD_LOGIC;
+		R1Out							: IN STD_LOGIC;
+		R2Out							: IN STD_LOGIC;
+		R3Out							: IN STD_LOGIC;
+		R4Out							: IN STD_LOGIC;
+		R5Out							: IN STD_LOGIC;
+		R6Out							: IN STD_LOGIC;
+		R7Out							: IN STD_LOGIC;
+		R8Out							: IN STD_LOGIC;
+		R9Out							: IN STD_LOGIC;
+		R10Out						: IN STD_LOGIC;
+		R11Out						: IN STD_LOGIC;
+		R12Out						: IN STD_LOGIC;
+		R13Out						: IN STD_LOGIC;
+		R14Out						: IN STD_LOGIC;
+		R15Out						: IN STD_LOGIC;
+		
+		HIout							: IN STD_LOGIC;
+		LOout							: IN STD_LOGIC;
+		Zhighout						: IN STD_LOGIC;
+		Zlowout						: IN STD_LOGIC;
+		PCout							: IN STD_LOGIC;
+		MDRout						: IN STD_LOGIC;
+		INPortout					: IN STD_LOGIC;
+		Cout							: IN STD_LOGIC;
+		
+		sel							: OUT std_logic_vector(4 downto 0));
+END ENTITY BusEncoder;
+
+
+ARCHITECTURE behavioural OF BusEncoder IS
+-- this is where constants/signal declaration is done... kinda like local var declaration
+BEGIN
+sel <="00000" WHEN R0Out = '1' ELSE
+		"00001" WHEN R1Out = '1' ELSE
+		"00011" WHEN R2Out = '1' ELSE
+		"00100" WHEN R3Out = '1' ELSE
+		"00101" WHEN R4Out = '1' ELSE
+		"00110" WHEN R5Out = '1' ELSE
+		"00111" WHEN R6Out = '1' ELSE
+		"01000" WHEN R7Out = '1' ELSE
+		"01001" WHEN R8Out = '1' ELSE
+		"01010" WHEN R9Out = '1' ELSE
+		"01011" WHEN R10Out = '1'ELSE
+		"01100" WHEN R11Out = '1'ELSE
+		"01101" WHEN R12Out = '1'ELSE
+		"01110" WHEN R13Out = '1'ELSE
+		"01111" WHEN R14Out = '1'ELSE
+		"10000" WHEN R15Out = '1'ELSE
+		
+		"10001" WHEN HIout = '1' ELSE
+		"10010" WHEN LOout = '1' ELSE
+		"10011" WHEN Zhighout = '1' ELSE
+		"10100" WHEN Zlowout = '1' ELSE
+		"10101" WHEN PCout = '1' ELSE
+		"10110" WHEN MDRout = '1' ELSE
+		"10111" WHEN INPortout = '1' ELSE
+		"11000" WHEN Cout = '1';
+END ARCHITECTURE behavioural;

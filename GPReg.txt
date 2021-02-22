@@ -1,0 +1,28 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+ENTITY GPReg IS
+   PORT
+   (
+      d, clk, clr, r1in   : IN STD_LOGIC;
+      q     				  : OUT STD_LOGIC
+   );
+END GPReg;
+
+ARCHITECTURE arch OF GPReg IS
+	BEGIN
+   -- Register with active-high clock & asynchronous clear
+		PROCESS (clk, clr, r1in)                      
+			BEGIN
+				IF clr = '1' THEN            
+					q <= '0';
+				ELSIF clk'EVENT AND clk = '1' THEN
+					IF r1in = '1' THEN
+						q <= d;
+					END IF;
+				END IF;
+		END PROCESS; 
+END arch;
+
+
+-- testing => reset ==> same val

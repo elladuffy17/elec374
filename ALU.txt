@@ -1,0 +1,120 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+
+ENTITY ALU IS
+	PORT(
+		Ain :  IN  STD_LOGIC_VECTOR(31 DOWNTO 0); -- INPUTS A/B from Data Path
+		Bin :  IN  STD_LOGIC_VECTOR(31 DOWNTO 0); 
+		ADDop : IN STD_LOGIC; -- Following are Operation signals -> when 1 they will activate their component and do necessary computations
+		SUBop : IN STD_LOGIC;
+		MULop : IN STD_LOGIC; 
+		DIVop : IN STD_LOGIC;
+		SHRop : IN STD_LOGIC;
+		SHLop : IN STD_LOGIC;
+		ROTRop : IN STD_LOGIC; 
+		ROTLop : IN STD_LOGIC;
+		ANDop : IN STD_LOGIC;
+		ORop : IN STD_LOGIC;
+		NEGop : IN STD_LOGIC; 
+		NOTop : IN STD_LOGIC;
+		IncPC : IN STD_LOGIC; -- signal to increment PC counter within ALU
+		Zout :  OUT  STD_LOGIC_VECTOR(63 DOWNTO 0) -- Z holds the results of the operation on A/B and will drive the bus
+	);
+END ENTITY ALU;
+
+ARCHITECTURE behaviroal OF ALU IS
+-- creating component for each operation --> DO WE STILL NEED ADD/SUB based on email ????
+COMPONENT add IS
+	PORT(dA	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  dB  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  sum: STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT add;
+
+COMPONENT sub IS
+	PORT(dA	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  dB  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  difference: STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT sub;
+
+COMPONENT mul32b IS -- Booth 
+	PORT(dA	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  dB  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  product: STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT mul32b;
+
+COMPONENT div IS
+	PORT(dividend	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  divisor  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  quotient: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  remainder: STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT div;
+
+COMPONENT shift_right_op IS
+	PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT shift_right_op;
+
+COMPONENT shift_left_op IS
+	PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT shift_left_op;
+
+COMPONENT rotate_right_op IS
+	PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT rotate_right_op;
+
+COMPONENT rotate_left_op IS
+	PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT rotate_left_op;
+
+COMPONENT negate IS
+	PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  output	: STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT negate;
+
+COMPONENT PCInc IS
+	PORT(data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  result: STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END COMPONENT PCInc;
+
+BEGIN
+-- Now begins start of architecture
+
+-- Define Required Signals for Architecture
+
+-- Map The Components Within  
+
+-- Sensitivity List Then Evaluate What Signal Was Called And Then Call Proper Component
+
+-- OP Code Instructions
+-- 00011 Add
+-- 00100 Sub
+-- 01110 Mul
+-- 01111 Div
+-- 00101 SHR
+-- 001100 SHL
+-- 00111 ROTR
+-- 01000 ROTL
+-- 01001 ANDop
+-- 01010 ORop
+-- 10000 NEGop
+-- 10001 NOTop
+
+END ARCHITECTURE behaviroal;
