@@ -1,0 +1,19 @@
+LIBRARY IEEE;
+use IEEE.STD_LOGIC_1164.all;
+
+ENTITY MDMux IS 
+	PORT(
+		BusMuxOut	: in STD_LOGIC_VECTOR(31 downto 0); 
+		Mdatain		: in STD_LOGIC_VECTOR(31 downto 0);
+		sel			: in STD_LOGIC; -- read signal
+	
+		MDMux_Out	: out STd_LOGIC_VECTOR(31 downto 0)
+	);
+end ENTITY MDMux;
+
+ARCHITECTURE beahvioral OF MDMux IS
+BEGIN
+WITH sel SELECT
+	MDMux_Out <= BusMuxOut when '0',
+					Mdatain when others;	-- from diagram low signal from bus/high from chip	
+end ARCHITECTURE beahvioral;

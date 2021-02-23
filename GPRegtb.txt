@@ -1,0 +1,49 @@
+--adder_lpm_rc_tb.vhd file:<This is the filename>
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+--entity declaration only. No definition here
+ENTITY GPReg_tb IS
+
+END ;
+
+--Architecture of the testbench with the signal names
+ARCHITECTURE GPReg_tb_arch OF GPReg_tb IS
+	SIGNAL dIn_tb   	 :  std_logic_vector (31 downto 0);
+	SIGNAL clkIn_tb   :  std_logic ;
+	SIGNAL clrIn_tb   :  std_logic ;
+	SIGNAL r1In_tb  :  std_logic;
+	SIGNAL q_tb    :  std_logic_vector (31 downto 0);
+	
+--component instantiation of the Design Under test (DUT)
+	COMPONENT GPReg_c
+		PORT(
+             clkIn, clrIn, r1In   : IN STD_LOGIC;
+				 d : IN STD_LOGIC_VECTOR (31 downto 0);
+				 q : OUT STD_LOGIC_VECTOR (31 downto 0)
+            );
+	END COMPONENT GPReg_c;
+	BEGIN
+	
+	DUT1  : GPReg_c
+--port mapping: between the DUT and the testbench signals
+		PORT MAP(
+		clkIn   => clkIn_tb,
+		clrIn   => clrIn_tb,
+		r1in => r1In_tb,
+		d => dIn_tb,
+		q => q_tb
+		);
+		
+--add test logic here
+		sim_process: process
+		begin
+				wait for 0 ns;
+			dIn_tb <= b"00000000000000000000000001000011";
+				wait for 40 ns;
+			clrIn_tb <= '1'; -- testing clear function
+				wait for 30 ns;
+			dIn_tb <= b"11111111111111111111111111111111"; -- testing output of Q/!Q
+			   wait;
+		end process sim_process; 
+end;

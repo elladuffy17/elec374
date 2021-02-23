@@ -1,0 +1,28 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY MDReg IS		-- READ????
+	PORT(
+		MDMux_Out		: in STD_LOGIC_VECTOR(31 downto 0);
+		MDataIn			: in STD_LOGIC_VECTOR(31 downto 0);
+		Clr				: in STD_LOGIC;
+		Clk				: in STD_LOGIC;
+		MDRin				: in STD_LOGIC;	-- write/enable
+		
+		MDRout			: out STD_LOGIC_VECTOR(31 downto 0));
+END ENTITY MDReg;
+	
+architecture behavioural OF MDReg IS
+	BEGIN
+	MDReg_process : process(clk, clr) IS -- clr/clk sensitivity list --> if either change process is executed (aka changing of clk sig)
+		BEGIN	
+			IF (Clr = '1') THEN	
+					MDRout <= "00000000000000000000000000000000"; -- signal is cleared on active high clr INPUT --> raw bit form
+			ELSIF(rising_edge(Clk)) THEN
+				IF (MDRin = '1') THEN
+					MDRout <= MDMux_Out;	-- store the data from bus into the register --> CONDITION = high clk + enable sig
+				END IF;
+			END IF;
+	END PROCESS MDReg_process;
+END ARCHITECTURE behavioural;
+	
