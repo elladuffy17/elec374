@@ -20,11 +20,11 @@ ENTITY ALU IS
 		NOTop : IN STD_LOGIC;
 		IncPCop : IN STD_LOGIC; -- signal to increment PC counter within ALU
 		ALU_Output :  OUT  STD_LOGIC_VECTOR(63 DOWNTO 0) -- Z holds the results of the operation on A/B and will drive the bus --> must be 64b for MUL
-	);
+		);
 END ENTITY ALU;
 
 ARCHITECTURE behavioural OF ALU IS
-	-- creating component for each operation --> DO WE STILL NEED ADD/SUB based on email ????
+	-- creating component for each operation --> DO WE STILL NEED ADD/SUB/PCInc based on email ????
 	COMPONENT Adder32b IS
 		PORT(a, b : STD_LOGIC_VECTOR(31 DOWNTO 0);
 			  c :	STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -95,8 +95,6 @@ ARCHITECTURE behavioural OF ALU IS
 	END COMPONENT PCInc;
 
 -- Define Required Signals for Architecture --> all the outputs should be mapped to proper components
-SIGNAL Adder32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
-SIGNAL Sub32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Mul32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Div32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Div32b_remainder : STD_LOGIC_VECTOR(31 DOWNTO 0); -- must return quotient/remainder
@@ -105,21 +103,17 @@ SIGNAL Shift_left_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Rotate_right_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Rotate_left_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Negate_output: STD_LOGIC_VECTOR(31 DOWNTO 0);
-SIGNAL PCInc_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 -- Now begins start of architecture
 BEGIN
--- Map The Signals of ALU to instantiated components  
-	--ALU_Adder32b  			:	PCInc PORT MAP(inA=>, inB => : IN STD_LOGIC_VECTOR(15dowqnz => Adder32b_output); ****
-	--ALU_Sub32b  			:	PCInc PORT MAP(); ****
+-- Map The Instantiated Components To The Local Signals Of ALU  
 	ALU_Mul32b  			:	PCInc PORT MAP(A => Ain, B => Bin, product => Mul32b_output);
 	ALU_Div32b  			:	PCInc PORT MAP(numer => Ain, denom => Bin, quotient => Div32b_output, remainder => Div32b_remainder );
-	ALU_Shift_right_op  	:	PCInc PORT MAP();
-	ALU_Shift_left_op  	:	PCInc PORT MAP();
-	ALU_Rotate_right_op  :	PCInc PORT MAP();
-	ALU_Rotate_left_op  	:	PCInc PORT MAP();
-	ALU_Negate  			:	PCInc PORT MAP();
-	--ALU_PCInc 				:	PCInc PORT MAP(); -- MAY OR MAY NOT NEED DEPENDING ON PROCESS ****
+	ALU_Shift_right_op  	:	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), SHRresult => Shift_right_op_output); -- 5 bits to represent 63b-0 of data in
+	ALU_Shift_left_op  	:	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), SHLresult => Shift_left_op_output);
+	ALU_Rotate_right_op  :	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), RORresult => Rotate_right_op_output);
+	ALU_Rotate_left_op  	:	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), ROLresult => Rotate_left_op_output);
+	ALU_Negate  			:	PCInc PORT MAP(A => Ain, NEGresult => Negate_output);
 	
 -- Sensitivity List Then Evaluate What Signal Was Called WHich Will Then Activate The Proper Component And Return A Single Output
 	ALU_proc	: PROCESS(Ain, Bin, ADDop, SUBop, MULop, DIVop, SHRop, SHLop, ROTRop, ROTLop, ANDop, ORop, NEGop, NOTop, IncPCop)
