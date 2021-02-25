@@ -24,21 +24,7 @@ ENTITY ALU IS
 END ENTITY ALU;
 
 ARCHITECTURE behavioural OF ALU IS
-	-- creating component for each operation --> DO WE STILL NEED ADD/SUB/PCInc based on email ????
-	COMPONENT Adder32b IS
-		PORT(a, b : STD_LOGIC_VECTOR(31 DOWNTO 0);
-			  c :	STD_LOGIC_VECTOR(31 DOWNTO 0);
-			  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
-			  );
-	END COMPONENT Adder32b;
-	
-	COMPONENT Sub32b IS
-		PORT(a, b : STD_LOGIC_VECTOR(31 DOWNTO 0);
-			  c :	STD_LOGIC_VECTOR(31 DOWNTO 0);
-			  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
-			  );
-	END COMPONENT Sub32b;	
-
+	-- creating component for each operation --> DO WE STILL NEED ADD/SUB/PCInc based on email ????	
 	COMPONENT Mul32b IS -- Booth 
 		PORT(dA	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		     dB  : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -57,42 +43,37 @@ ARCHITECTURE behavioural OF ALU IS
 	COMPONENT Shift_right_op IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 			  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
-			  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+			  SHRresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 			);
 	END COMPONENT Shift_right_op;
 
 	COMPONENT Shift_left_op IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		     distance : STD_LOGIC_VECTOR(4 DOWNTO 0); -- only needs to count 0->31
-		     output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		     SHLresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 		     );
 	END COMPONENT Shift_left_op;
 
 	COMPONENT Rotate_right_op IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
-		  output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  RORresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 		  );
 	END COMPONENT Rotate_right_op;
 
 	COMPONENT rotate_left_op IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		     distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
-		     output : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		     ROLresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 		     );
 	END COMPONENT Rotate_left_op;
 
 	COMPONENT Negate IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
-		     output	: STD_LOGIC_VECTOR(31 DOWNTO 0)
+		     NEGresult	: STD_LOGIC_VECTOR(31 DOWNTO 0)
 		     );
 	END COMPONENT Negate;
 
-	COMPONENT PCInc IS
-		PORT(data : STD_LOGIC_VECTOR(31 DOWNTO 0);
-		     output: STD_LOGIC_VECTOR(31 DOWNTO 0)
-		  );
-	END COMPONENT PCInc;
 
 -- Define Required Signals for Architecture --> all the outputs should be mapped to proper components
 SIGNAL Mul32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
