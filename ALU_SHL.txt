@@ -1,0 +1,27 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+
+ENTITY ALU_SHL IS
+	PORT(
+		data		 :  IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		distance  : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		SHLresult : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) -- Z holds the results of the operation on A/B and will drive the bus --> must be 64b for MUL
+		);
+END ENTITY ALU_SHL;
+
+ARCHITECTURE behav OF ALU_SHL IS
+	SIGNAL shift_result : STD_LOGIC_VECTOR(31 DOWNTO 0); -- temp vector 
+	BEGIN
+		PROCESS(data)
+			BEGIN
+				FOR j IN 0 TO 31 LOOP
+					IF (j >= 0 AND j <= conv_integer(distance)) THEN -- if the index is within 0 to distance then those are 0 bits
+						shift_result(j) <= '0';
+					ELSE
+						 shift_result(j) <= (shift_result(j - conv_integer(distance)));-- the rest are the shifted bits
+					END IF;
+				END LOOP;
+		END PROCESS;
+		SHLresult <= shift_result; -- assigning final value 
+END ARCHITECTURE behav;

@@ -1,0 +1,18 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+
+ENTITY ALU_ROL IS
+	PORT(data	:  IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  distance : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  ROLresult : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+		  );
+END ENTITY ALU_ROL;
+
+ARCHITECTURE behavioural OF ALU_ROL IS
+	BEGIN
+		PROCESS(data)
+			BEGIN
+				ROLresult <= (data rol distance);
+		END PROCESS;
+END ARCHITECTURE behavioural;
