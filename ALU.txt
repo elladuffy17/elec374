@@ -68,13 +68,6 @@ ARCHITECTURE behavioural OF ALU IS
 		     );
 	END COMPONENT Rotate_left_op;
 
-	COMPONENT Negate IS
-		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
-		     NEGresult	: STD_LOGIC_VECTOR(31 DOWNTO 0)
-		     );
-	END COMPONENT Negate;
-
-
 -- Define Required Signals for Architecture --> all the outputs should be mapped to proper components
 SIGNAL Mul32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Div32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -83,20 +76,17 @@ SIGNAL Shift_right_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Shift_left_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Rotate_right_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Rotate_left_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
-SIGNAL Negate_output: STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 -- Now begins start of architecture
 BEGIN
 -- Map The Instantiated Components To The Local Signals Of ALU  
-	ALU_Mul32b  			:	PCInc PORT MAP(A => Ain, B => Bin, product => Mul32b_output);
-	ALU_Div32b  			:	PCInc PORT MAP(numer => Ain, denom => Bin, quotient => Div32b_output, remainder => Div32b_remainder );
-	ALU_Shift_right_op  	:	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), SHRresult => Shift_right_op_output); -- 5 bits to represent 63b-0 of data in
-	ALU_Shift_left_op  	:	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), SHLresult => Shift_left_op_output);
-	ALU_Rotate_right_op  :	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), RORresult => Rotate_right_op_output);
-	ALU_Rotate_left_op  	:	PCInc PORT MAP(A => Ain, distance => Bin(4 DOWNTO 0), ROLresult => Rotate_left_op_output);
-	ALU_Negate  			:	PCInc PORT MAP(A => Ain, NEGresult => Negate_output);
-	
--- Sensitivity List Then Evaluate What Signal Was Called WHich Will Then Activate The Proper Component And Return A Single Output
+	ALU_Mul32b  			:	ALU_MUL PORT MAP(dA => Ain, dB => Bin, product => Mul32b_output);
+	ALU_Div32b  			:	ALU_DIV PORT MAP(numer => Ain, denom => Bin, quotient => Div32b_output, remainder => Div32b_remainder );
+	ALU_Shift_right_op  	:	ALU_SHR PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), SHRresult => Shift_right_op_output); -- 5 bits to represent 63b-0 of data in
+	ALU_Shift_left_op  	:	ALU_SHL PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), SHLresult => Shift_left_op_output);
+	ALU_Rotate_right_op  :	ALU_ROR PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), RORresult => Rotate_right_op_output);
+	ALU_Rotate_left_op  	:	ALU_ROL PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), ROLresult => Rotate_left_op_output);
+-- Sensitivity List Then Evaluate What Signal Was Called WHich Will Then Ac tivate The Proper Component And Return A Single Output
 	ALU_proc	: PROCESS(Ain, Bin, ADDop, SUBop, MULop, DIVop, SHRop, SHLop, ROTRop, ROTLop, ANDop, ORop, NEGop, NOTop, IncPCop)
 		BEGIN
 			IF ADDop = '1' THEN
@@ -130,7 +120,7 @@ BEGIN
 				ALU_Output(31 DOWNTO 0) <= Ain OR Bin; -- using built in operations
 			ELSIF NEGop = '1' THEN
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0');
-				ALU_Output(31 DOWNTO 0) <= ALU_Negate_output;
+				ALU_Output(31 DOWNTO 0) <= (NOT data + "00000000000000000000000000000001"); -- recreating twos compliment
 			ELSIF NOTop = '1' THEN 
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0');
 				ALU_Output(31 DOWNTO 0) <= NOT Ain; -- using built in operations
