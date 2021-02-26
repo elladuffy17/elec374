@@ -16,8 +16,8 @@ ARCHITECTURE behav OF ALU_SHR IS
 		PROCESS(data)
 			BEGIN
 				FOR j IN 0 TO 31 LOOP
-					IF (j >= 0 AND j <= (31- conv_integer(distance))) THEN -- if the index is within 0 to 31-distance then those are shifted bits --> grabbing bits from shift side
-						shift_result(j) <= (shift_result(j + conv_integer(distance)));
+					IF (j >= 0 AND j <= (31- TO_INTEGER(distance))) THEN -- if the index is within 0 to 31-distance then those are shifted bits --> grabbing bits from shift side --> shift distance applies both ways
+						shift_result(j) <= (shift_result(j + TO_INTEGER(distance)));
 					ELSE
 						 shift_result(j) <= '0';-- else those are the new 0 bits comming in
 					END IF;
