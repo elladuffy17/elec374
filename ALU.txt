@@ -24,51 +24,94 @@ ENTITY ALU IS
 END ENTITY ALU;
 
 ARCHITECTURE behavioural OF ALU IS
-	-- creating component for each operation --> DO WE STILL NEED ADD/SUB/PCInc based on email ????	
-	COMPONENT Mul32b IS -- Booth 
+	-- creating component for each operation --> DO WE STILL NEED ADD/SUB/PCInc/AND/OR/NEG/NOT based on email ????	
+	COMPONENT ALU_ADD IS
+		PORT(dA	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		     dB : STD_LOGIC_VECTOR(31 DOWNTO 0);
+			  Cin : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		     Sum : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		     );
+	END COMPONENT ALU_ADD;
+	
+	COMPONENT ALU_SUB IS
+		PORT(dA	: STD_LOGIC_VECTOR(31 DOWNTO 0);
+		     dB : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		     Difference : STD_LOGIC_VECTOR(31 DOWNTO 0)
+		     );
+	END COMPONENT ALU_SUB;
+	
+	COMPONENT ALU_MUL IS -- Booth 
 		PORT(dA	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		     dB  : STD_LOGIC_VECTOR(31 DOWNTO 0);
-		     output: STD_LOGIC_VECTOR(63 DOWNTO 0) -- booth uses double the bits as result
+		     product: STD_LOGIC_VECTOR(63 DOWNTO 0) -- booth uses double the bits as result
 		     );
-	END COMPONENT Mul32b;
+	END COMPONENT ALU_MUL;
 
-	COMPONENT Div32b IS
+	COMPONENT ALU_DIV IS
 		PORT(dividend	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 			  divisor  : STD_LOGIC_VECTOR(31 DOWNTO 0);
 			  output: STD_LOGIC_VECTOR(31 DOWNTO 0);
 			  remainder: STD_LOGIC_VECTOR(31 DOWNTO 0)
 		     );
-	END COMPONENT Div32b;
+	END COMPONENT ALU_DIV;
 
-	COMPONENT Shift_right_op IS
+	COMPONENT ALU_SHR IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 			  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
 			  SHRresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 			);
-	END COMPONENT Shift_right_op;
+	END COMPONENT ALU_SHR;
 
-	COMPONENT Shift_left_op IS
+	COMPONENT ALU_SHL IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		     distance : STD_LOGIC_VECTOR(4 DOWNTO 0); -- only needs to count 0->31
 		     SHLresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 		     );
-	END COMPONENT Shift_left_op;
+	END COMPONENT ALU_SHL;
 
-	COMPONENT Rotate_right_op IS
+	COMPONENT ALU_ROR IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		  distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
 		  RORresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 		  );
-	END COMPONENT Rotate_right_op;
+	END COMPONENT ALU_ROR;
 
-	COMPONENT rotate_left_op IS
+	COMPONENT ALU_ROL IS
 		PORT(data	: STD_LOGIC_VECTOR(31 DOWNTO 0);
 		     distance : STD_LOGIC_VECTOR(31 DOWNTO 0);
 		     ROLresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
 		     );
-	END COMPONENT Rotate_left_op;
+	END COMPONENT ALU_ROL;
+	
+	COMPONENT ALU_AND IS
+		PORT(dA : STD_LOGIC_VECTOR(31 DOWNTO 0);
+			  dB : STD_LOGIC_VECTOR(31 DOWNTO 0);
+			  ANDresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
+			  );
+	END COMPONENT ALU_AND;
+	
+		COMPONENT ALU_OR IS
+		PORT(dA : STD_LOGIC_VECTOR(31 DOWNTO 0);
+			  dB : STD_LOGIC_VECTOR(31 DOWNTO 0);
+			  ORresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
+			  );
+	END COMPONENT ALU_OR;
+	
+		COMPONENT ALU_NOT IS
+		PORT(dA : STD_LOGIC_VECTOR(31 DOWNTO 0);
+			  NOTresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
+			  );
+	END COMPONENT ALU_NOT;
+	
+		COMPONENT ALU_NEG IS
+		PORT(dA : STD_LOGIC_VECTOR(31 DOWNTO 0);
+			  NEGresult : STD_LOGIC_VECTOR(31 DOWNTO 0)
+			  );
+	END COMPONENT ALU_NEG;
 
 -- Define Required Signals for Architecture --> all the outputs should be mapped to proper components
+SIGNAL ALU_ADD_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
+SIGNAL ALU_SUB_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Mul32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Div32b_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Div32b_remainder : STD_LOGIC_VECTOR(31 DOWNTO 0); -- must return quotient/remainder
@@ -76,28 +119,41 @@ SIGNAL Shift_right_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Shift_left_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Rotate_right_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL Rotate_left_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
+SIGNAL ALU_AND_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
+SIGNAL ALU_OR_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
+SIGNAL ALU_NEG_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
+SIGNAL ALU_NOT_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0); 
+SIGNAL ALU_PCInc_op_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 -- Now begins start of architecture
 BEGIN
--- Map The Instantiated Components To The Local Signals Of ALU  
-	ALU_Mul32b  			:	ALU_MUL PORT MAP(dA => Ain, dB => Bin, product => Mul32b_output);
-	ALU_Div32b  			:	ALU_DIV PORT MAP(numer => Ain, denom => Bin, quotient => Div32b_output, remainder => Div32b_remainder );
-	ALU_Shift_right_op  	:	ALU_SHR PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), SHRresult => Shift_right_op_output); -- 5 bits to represent 63b-0 of data in
-	ALU_Shift_left_op  	:	ALU_SHL PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), SHLresult => Shift_left_op_output);
-	ALU_Rotate_right_op  :	ALU_ROR PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), RORresult => Rotate_right_op_output);
-	ALU_Rotate_left_op  	:	ALU_ROL PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), ROLresult => Rotate_left_op_output);
+-- Instantiate The Components -> map their ports to ALU local signals -> which will be mapped to ports of ALU
+	ALU_Add_inst				:	ALU_ADD PORT MAP (dA => Ain, dB => Bin, sum => ALU_ADD_op_output);
+	ALU_Sub_inst				:  ALU_SUB PORT MAP (dA => Ain, dB => Bin, difference => ALU_SUB_op_output);
+	ALU_Mul32b_inst			:	ALU_MUL PORT MAP(dA => Ain, dB => Bin, product => Mul32b_output);
+	ALU_Div32b_inst  			:	ALU_DIV PORT MAP(numer => Ain, denom => Bin, quotient => Div32b_output, remainder => Div32b_remainder );
+	ALU_Shift_right_inst  	:	ALU_SHR PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), SHRresult => Shift_right_op_output); -- 5 bits to represent 63b-0 of data in
+	ALU_Shift_left_inst 		:	ALU_SHL PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), SHLresult => Shift_left_op_output);
+	ALU_Rotate_right_inst  	:	ALU_ROR PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), RORresult => Rotate_right_op_output);
+	ALU_Rotate_left_inst 	:	ALU_ROL PORT MAP(data => Ain, distance => Bin(4 DOWNTO 0), ROLresult => Rotate_left_op_output);
+	ALU_AND_inst				: ALU_AND PORT MAP (dA => Ain, dB => Bin, ANDresult => ALU_AND_op_output);
+	ALU_OR_inst					: ALU_OR PORT MAP (dA => Ain, dB => Bin, ORresult => ALU_OR_op_output);
+	ALU_NEG_inst				: ALU_NEG PORT MAP (dA => Ain, NEGresult => ALU_NEG_op_output);
+	ALU_NOT_inst				: ALU_NOT PORT MAP (dA => Ain, NOTresult => ALU_NOT_op_output);
+	ALU_PCInc_inst				: ALU_PCInc PORT MAP (dA => Ain, PCIncresult => ALU_PCInc_op_output);
+	
 -- Sensitivity List Then Evaluate What Signal Was Called WHich Will Then Ac tivate The Proper Component And Return A Single Output
 	ALU_proc	: PROCESS(Ain, Bin, ADDop, SUBop, MULop, DIVop, SHRop, SHLop, ROTRop, ROTLop, ANDop, ORop, NEGop, NOTop, IncPCop)
 		BEGIN
 			IF ADDop = '1' THEN
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0'); 
-				ALU_Output(31 DOWNTO 0) <= (Ain + Bin); 
+				ALU_Output(31 DOWNTO 0) ALU_ADD_op_output; --<= (Ain + Bin); 
 			ELSIF SUBop  = '1' THEN
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0');
-				ALU_Output(31 DOWNTO 0) <= (Ain - Bin);
-			ELSIF MULop THEN
+				ALU_Output(31 DOWNTO 0) <= ALU_SUB_op_output;
+			ELSIF MULop = '1' THEN
 				ALU_Output <= Mul32b_output; -- all 64b are used so full output is assigned
-			ELSIF DIVop THEN
+			ELSIF DIVop = '1' THEN
 				ALU_Output(63 DOWNTO 32) <= Div32b_output; -- all 64b are used to separate quotient from remainder
 				ALU_Output(31 DOWNTO 0) <= Div32b_remainder;
 			ELSIF SHRop = '1' THEN
@@ -114,19 +170,19 @@ BEGIN
 				ALU_Output(31 DOWNTO 0) <= ALU_Rotate_left_op_output;
 			ELSIF ANDop  = '1' THEN
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0'); 
-				ALU_Output(31 DOWNTO 0) <= Ain AND Bin; -- using built in operations
+				ALU_Output(31 DOWNTO 0)  <= ALU_AND_op_output; --<= Ain AND Bin; -- using built in operations
 			ELSIF ORop = '1' THEN 
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0');
-				ALU_Output(31 DOWNTO 0) <= Ain OR Bin; -- using built in operations
+				ALU_Output(31 DOWNTO 0) <= ALU_OR_op_output; --Ain OR Bin; -- using built in operations
 			ELSIF NEGop = '1' THEN
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0');
-				ALU_Output(31 DOWNTO 0) <= (NOT data + "00000000000000000000000000000001"); -- recreating twos compliment
+				ALU_Output(31 DOWNTO 0) <= ALU_NEG_op_output; --(NOT data + "00000000000000000000000000000001"); -- recreating twos compliment
 			ELSIF NOTop = '1' THEN 
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0');
-				ALU_Output(31 DOWNTO 0) <= NOT Ain; -- using built in operations
+				ALU_Output(31 DOWNTO 0) <= ALU_NOT_op_output; --NOT Ain; -- using built in operations
 			ELSIF IncPCop = '1' THEN
 				ALU_Output(63 DOWNTO 32) <= (OTHERS => '0');
-				ALU_Output(31 DOWNTO 0) <= Ain + "00000000000000000000000000000001"; -- Not sure if this is right ****
+				ALU_Output(31 DOWNTO 0) <= ALU_PCInc_op_output; --Ain + "00000000000000000000000000000001"; -- Not sure if this is right ****
 			END IF;	
 	END PROCESS;
 END ARCHITECTURE behavioural;
