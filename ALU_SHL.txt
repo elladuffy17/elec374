@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 
 ENTITY ALU_SHL IS
 	PORT(
@@ -16,10 +17,10 @@ ARCHITECTURE behav OF ALU_SHL IS
 		PROCESS(data)
 			BEGIN
 				FOR j IN 0 TO 31 LOOP
-					IF (j >= 0 AND j <= conv_integer(distance)) THEN -- if the index is within 0 to distance then those are 0 bits
+					IF (j >= 0 AND j <= TO_INTEGER(distance)) THEN -- if the index is within 0 to distance then those are 0 bits
 						shift_result(j) <= '0';
 					ELSE
-						 shift_result(j) <= (shift_result(j - conv_integer(distance)));-- the rest are the shifted bits
+						 shift_result(j) <= (shift_result(j - TO_INTEGER(distance)));-- the rest are the shifted bits
 					END IF;
 				END LOOP;
 		END PROCESS;
