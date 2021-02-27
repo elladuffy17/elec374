@@ -31,7 +31,7 @@ ARCHITECTURE behavioural OF ALU_ROL IS
 		sub_wire1 <= '0';
 		result <= sub_wire0(31 DOWNTO 0);
 		
-		lpm_rol_component : lpm_rol
+		LPM_ROL_component : LPM_ROL
 		GENERIC MAP (
 			lpm_shifttype => "ROTATE",
 			lpm_type => "lpm_rol",
@@ -42,7 +42,7 @@ ARCHITECTURE behavioural OF ALU_ROL IS
 			data => data,
 			direction => sub_wire1,
 			distance => distance,
-			result => sub_wire0
+			ROLresult => sub_wire0
 		);
 	
 	END ARCHITECTURE behavioural;
