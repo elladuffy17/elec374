@@ -3,16 +3,48 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
 ENTITY ALU_ROR IS
-	PORT(data	:  IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-		  distance : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-		  RORresult : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
-		  );
+	PORT(
+		data		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		distance 	: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+		RORresult	: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+	);
 END ENTITY ALU_ROR;
 
 ARCHITECTURE behavioural OF ALU_ROR IS
-	BEGIN
-		PROCESS(data)
-			BEGIN
-				RORresult <= (data ror distance);
-		END PROCESS;
+	
+	SIGNAL sub_wire0	: STD_LOGIC_VECTOR (31 DOWNTO 0);
+	SIGNAL sub_wire1	: STD_LOGIC;
+	
+	COMPONENT lpm_ror
+	GENERIC (
+		lpm_shifttype	: STRING;
+		lpm_type	: STRING;
+		lpm_width	: NATURAL;
+		lpm_widthdist	: NATURAL
+	);
+	PORT (
+		data		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		direction	: IN STD_LOGIC;
+		distance 	: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+		RORresult	: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+	);
+
+	BEGIN		
+		sub_wire1 <= '1';
+		RORresult <= sub_wire0(31 DOWNTO 0);
+		
+		LPM_ROR_component : LPM_ROR
+		GENERIC MAP (
+			lpm_shifttype => "ROTATE",
+			lpm_type => "LPM_ROR",
+			lpm_width => 32,
+			lpm_widthdist => 5
+		)
+		PORT MAP (
+			data => data,
+			direction => sub_wire1,
+			distance => distance,
+			RORresult => sub_wire0
+		);
+	
 END ARCHITECTURE behavioural;
